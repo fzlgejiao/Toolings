@@ -46,29 +46,36 @@ namespace Update
                 m_FtpClient.UploadProgressChanged += new FtpClient.Delegate_UploadProgressChanged(ClientUploadProgressChanged);
                 m_FtpClient.UploadFileCompleted += new FtpClient.Delegate_UploadFileCompleted(ClientUploadFileCompleted);
             }
-
-            if (m_FtpClient.DownloadFile(@"/RingRailPCB/AutoUpdate.xml", Application.StartupPath,"XmlTemp"))
+            try
             {
-                MyXML myXmlTemp = new MyXML(Application.StartupPath + @"/XmlTemp");
-                int remoteversion = Int16.Parse(myXmlTemp.GetXMLNode("UpdateInfo", "Version").Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries)[3]);
-                if (int.Parse(Properties.Settings.Default.IsAutoUpdate) == 1)
+                if (m_FtpClient.DownloadFile(@"/RingRailPCB/AutoUpdate.xml", Application.StartupPath, "XmlTemp"))
                 {
-                    if (remoteversion > LocalVerion)
+                    MyXML myXmlTemp = new MyXML(Application.StartupPath + @"/XmlTemp");
+                    int remoteversion = Int16.Parse(myXmlTemp.GetXMLNode("UpdateInfo", "Version").Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries)[3]);
+                    if (int.Parse(Properties.Settings.Default.IsAutoUpdate) == 1)
                     {
-                        this.RadupdateLable.Text = "发现新版本，请按<Update>更新";
-                    }
-                    else if (remoteversion == LocalVerion)
-                    {
-                          ReStartApp();
+                        if (remoteversion > LocalVerion)
+                        {
+                            this.RadupdateLable.Text = "发现新版本，请按<Update>更新";
+                        }
+                        else if (remoteversion == LocalVerion)
+                        {
+                            ReStartApp();
+                        }
                     }
                 }
-            }
-            else
+                else
+                {
+                    this.RadupdateLable.Text = "Error to Get Remote Updater File!";
+                    this.radButton_update.Enabled = false;
+                }
+            }catch
             {
-                this.RadupdateLable.Text = "Error to Get Remote Updater File!";
+                RadMessageBox.Show("Ftp site disconnected!");
+                this.RadupdateLable.Text = "Ftp site disconnected!";
                 this.radButton_update.Enabled = false;
+                this.radButton_upload.Enabled = false;
             }
-            
         }
 
         public void ReStartApp()
@@ -130,7 +137,7 @@ namespace Update
             }
             catch
             {
-                this.radProgressBar.Text = "Upload Complete!";
+                this.radProgressBar.Text = "Upload Complete!";               
             }
         }
 
