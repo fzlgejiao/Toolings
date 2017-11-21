@@ -28,6 +28,7 @@ namespace Update
         MyXML myXml = new MyXML(Application.StartupPath + @"/AutoUpdate.xml");
         string remoteDir = string.Empty;
         int downloadnumber = 0;
+
         public Form1()
         {
             InitializeComponent();
