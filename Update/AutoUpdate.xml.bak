@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<AutoUpdate>
+  <URLAddres>ftp://10.130.71.112:21/</URLAddres>
+  <UpdateInfo>
+    <UpdateTime></UpdateTime> 
+    <Version>1.0.0.1</Version> 
+  </UpdateInfo>
+  <UpdateFileList>   
+    <UpdateFile FileName="L_F522.tmp.PNG" />
+    <UpdateFile FileName="L_EB5B.tmp.PNG" />
+    <UpdateFile FileName="AutoUpdate.xml" />
+  </UpdateFileList>
+  <RestartApp>
+    <ReStart>Yes</ReStart> 
+    <AppName></AppName> 
+  </RestartApp>
+</AutoUpdate>
+
