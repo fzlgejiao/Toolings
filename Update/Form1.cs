@@ -109,6 +109,8 @@ namespace Update
                 if (downloadnumber == remotefilelist.Count)
                 {
                     downloadnumber = 0;
+                    //copy the xml file
+                    System.IO.File.Copy(Application.StartupPath + @"/XmlTemp", Application.StartupPath + @"/AutoUpdate.xml", true);
                     ReStartApp();
                 }
             }
