@@ -50,12 +50,12 @@ namespace Update
         {
             try
              {
-                Request = (FtpWebRequest) WebRequest.Create(uri);
+                Request = (FtpWebRequest) WebRequest.Create(uri);              
                 Request.UseBinary = true;
                 Request.Method = ftpMethod;
                 Request.Credentials = new NetworkCredential(this.usr, this.password);
-                
-                return (FtpWebResponse) Request.GetResponse();
+
+                return (FtpWebResponse)Request.GetResponse();
             }
             catch (Exception ex)
             {

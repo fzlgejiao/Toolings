@@ -25,17 +25,27 @@ namespace Update
         const string ftppasswd = "Uster1111";
         int LocalVerion = 0;
         string Appname = string.Empty;
-        MyXML myXml = new MyXML(Application.StartupPath + @"/AutoUpdate.xml");
+        MyXML myXml;
+        MyXML myXmlTemp;
         string remoteDir = string.Empty;
         int downloadnumber = 0;
 
         public Form1()
         {
             InitializeComponent();
-            string url = myXml.GetXMLNode("URLAddres");
-            LocalVerion = Int16.Parse(myXml.GetXMLNode("UpdateInfo", "Version").Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries)[3]);
-            Appname = myXml.GetXMLNode("RestartApp", "AppName");
             remoteDir = Properties.Settings.Default.RmoteDir;
+
+            if (!File.Exists(Application.StartupPath + @"/AutoUpdate.xml"))
+            {
+                this.RadupdateLable.Text = "NO AutoUpdate File!";
+                this.radButton_update.Enabled = false;
+                this.radButton_upload.Enabled = false;
+                return;               
+            }
+
+            myXml = new MyXML(Application.StartupPath + @"/AutoUpdate.xml");
+            LocalVerion = Int16.Parse(myXml.GetXMLNode("UpdateInfo", "Version").Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries)[3]);               
+            string url = myXml.GetXMLNode("URLAddres");
 
             if (url != null)
             {
@@ -46,11 +56,13 @@ namespace Update
                 m_FtpClient.UploadProgressChanged += new FtpClient.Delegate_UploadProgressChanged(ClientUploadProgressChanged);
                 m_FtpClient.UploadFileCompleted += new FtpClient.Delegate_UploadFileCompleted(ClientUploadFileCompleted);
             }
+
             try
             {
-                if (m_FtpClient.DownloadFile(@"/RingRailPCB/AutoUpdate.xml", Application.StartupPath, "XmlTemp"))
+                if (m_FtpClient.DownloadFile(remoteDir+"AutoUpdate.xml", Application.StartupPath, "XmlTemp"))
                 {
-                    MyXML myXmlTemp = new MyXML(Application.StartupPath + @"/XmlTemp");
+                    myXmlTemp = new MyXML(Application.StartupPath + @"/XmlTemp");
+                    Appname = myXmlTemp.GetXMLNode("RestartApp", "AppName");
                     int remoteversion = Int16.Parse(myXmlTemp.GetXMLNode("UpdateInfo", "Version").Split(new string[] { "." }, StringSplitOptions.RemoveEmptyEntries)[3]);
                     if (int.Parse(Properties.Settings.Default.IsAutoUpdate) == 1)
                     {
@@ -63,6 +75,7 @@ namespace Update
                             ReStartApp();
                         }
                     }
+                    else this.radButton_update.Enabled = false;
                 }
                 else
                 {
@@ -116,8 +129,12 @@ namespace Update
                 if (downloadnumber == remotefilelist.Count)
                 {
                     downloadnumber = 0;
-                    //copy the xml file
-                    System.IO.File.Copy(Application.StartupPath + @"/XmlTemp", Application.StartupPath + @"/AutoUpdate.xml", true);
+                    //copy the xml file and delete temp file
+                    if (File.Exists(Application.StartupPath + @"/XmlTemp"))
+                    {
+                        System.IO.File.Copy(Application.StartupPath + @"/XmlTemp", Application.StartupPath + @"/AutoUpdate.xml", true);
+                        File.Delete(Application.StartupPath + @"/XmlTemp");
+                    }
                     ReStartApp();
                 }
             }
@@ -173,7 +190,7 @@ namespace Update
                     if (m_FtpClient != null)
                     {
                         this.RadupdateLable.Text = String.Format("Uploading File[{0}/{1}]: " + System.IO.Path.GetFileName(filelist[i]), i + 1, filelist.Count);
-                        m_FtpClient.UploadFileAsync(filelist[i], @"/RingRailPCB/" + System.IO.Path.GetFileName(filelist[i]));
+                        m_FtpClient.UploadFileAsync(filelist[i], remoteDir + System.IO.Path.GetFileName(filelist[i]));
                     }
                 }
             }
@@ -188,11 +205,12 @@ namespace Update
                 this.radProgressBar.Value1 = 0;
 
                 remotefilelist = new List<string>();
-                remotefilelist = myXml.GetXMLfileList();
+                remotefilelist = myXmlTemp.GetXMLfileList();
+
                 for (int i = 0; i < remotefilelist.Count; i++)
                 {
                     this.RadupdateLable.Text = String.Format("Downloading RemoteFiles[{0}/{1}]: " + System.IO.Path.GetFileName(remotefilelist[i]), i + 1, remotefilelist.Count);
-                    m_FtpClient.DownloadFileAsync(@"/RingRailPCB/" + remotefilelist[i], Application.StartupPath);
+                    m_FtpClient.DownloadFileAsync(remoteDir + remotefilelist[i], Application.StartupPath);
                 }
             }
         }

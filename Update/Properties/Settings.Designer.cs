@@ -34,7 +34,7 @@ namespace Update.Properties {
         
         [global::System.Configuration.ApplicationScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("RingRailPCB")]
+        [global::System.Configuration.DefaultSettingValueAttribute("/RingRailPCB/")]
         public string RmoteDir {
             get {
                 return ((string)(this["RmoteDir"]));

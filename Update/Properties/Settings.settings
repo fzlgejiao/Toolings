@@ -6,7 +6,7 @@
       <Value Profile="(Default)">39353237</Value>
     </Setting>
     <Setting Name="RmoteDir" Type="System.String" Scope="Application">
-      <Value Profile="(Default)">RingRailPCB</Value>
+      <Value Profile="(Default)">/RingRailPCB/</Value>
     </Setting>
     <Setting Name="IsAutoUpdate" Type="System.String" Scope="Application">
       <Value Profile="(Default)">0</Value>
